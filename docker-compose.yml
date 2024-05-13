@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  webserver:
+    build: 
+      context: .
+      dockerfile: dockerfile
+    ports:
+      - "8080:80"
+    volumes:
+      - ./volumes/app/:/var/www/html
+    restart: always
+    container_name: online_store
