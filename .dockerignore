@@ -1,6 +1,3 @@
-# Exclude everything
-**
-
 # Include specific files
 !docker-compose.yml
 !build.sh
