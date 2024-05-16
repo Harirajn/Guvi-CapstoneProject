@@ -8,7 +8,7 @@ pipeline {
             }
             steps {
                 script {
-                    docker.build("yourdevrepository/yourapp:${env.BUILD_NUMBER}")
+                    docker.build("harirajn/dev:${env.BUILD_NUMBER}")
                     docker.withRegistry('https://registry.hub.docker.com', 'harirajn-dockerhub') {
                         docker.image("harirajn/dev:${env.BUILD_NUMBER}").push()
                     }
