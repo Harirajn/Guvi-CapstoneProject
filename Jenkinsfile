@@ -64,7 +64,7 @@ pipeline {
                 script {
                     sshagent([EC2_SSH_CREDENTIALS_ID]) {
                         sh """
-                        ssh -o StrictHostKeyChecking=no ${EC2_HOST} << EOF
+                        ssh -o StrictHostKeyChecking=no ${EC2_HOST} << 'EOF'
                         docker pull ${DOCKER_PROD_REPO}:latest
                         docker stop my-app || true
                         docker rm my-app || true
