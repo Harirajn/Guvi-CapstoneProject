@@ -60,9 +60,7 @@ pipeline {
                             sh "ssh -o StrictHostKeyChecking=no -i ${EC2_INSTANCE_KEY} ${EC2_INSTANCE_USER}@${EC2_INSTANCE_IP} 'docker stop <container_id> && docker rm <container_id> || true'"
                             sh "ssh -o StrictHostKeyChecking=no -i ${EC2_INSTANCE_KEY} ${EC2_INSTANCE_USER}@${EC2_INSTANCE_IP} 'docker run -d --name my_container -p 80:80 harirajn/prod:${env.BUILD_NUMBER}'"
                         }
-                    } else {
-                        echo "No changes from dev branch detected in this merge to master brach."
-                    }
+                    } 
                 }
             }
         }
