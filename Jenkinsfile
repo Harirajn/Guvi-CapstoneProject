@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_DEV_REPO = 'harirajn/dev-repo'
-        DOCKER_PROD_REPO = 'harirajn/prod-repo'
+        DOCKER_DEV_REPO = 'harirajn/dev'
+        DOCKER_PROD_REPO = 'harirajn/prod'
         DOCKER_CREDENTIALS_ID = 'harirajn-dockerhub'
         EC2_SSH_CREDENTIALS_ID = 'ec2-instance-ssh'
         EC2_HOST = 'ubuntu@18.246.241.76'
@@ -15,7 +15,7 @@ pipeline {
                 checkout scm
             }
         }
-        
+
         stage('Build Docker Image') {
             steps {
                 script {
@@ -34,8 +34,8 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
-                        dockerImage.push("${env.BUILD_NUMBER}")
-                        dockerImage.push("latest")
+                        dockerImage.push("${DOCKER_DEV_REPO}:${env.BUILD_NUMBER}")
+                        dockerImage.push("${DOCKER_DEV_REPO}:latest")
                     }
                 }
             }
@@ -49,8 +49,8 @@ pipeline {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
                         def prodImage = docker.build("${DOCKER_PROD_REPO}:${env.BUILD_NUMBER}")
-                        prodImage.push("${env.BUILD_NUMBER}")
-                        prodImage.push("latest")
+                        prodImage.push("${DOCKER_PROD_REPO}:${env.BUILD_NUMBER}")
+                        prodImage.push("${DOCKER_PROD_REPO}:latest")
                     }
                 }
             }
@@ -73,7 +73,7 @@ pipeline {
                         '''
                     }
                 }
-            }    
+            }
         }
 
         post {
