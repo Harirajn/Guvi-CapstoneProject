@@ -57,25 +57,24 @@ pipeline {
         }
 
         stage('Deploy to EC2') {
-            when {
-                branch 'master'
-            }
-            steps {
-                script {
-                    sshagent([EC2_SSH_CREDENTIALS_ID]) {
-                        sh """
-                        ssh -o StrictHostKeyChecking=no ${EC2_HOST} << 'EOF'
-                        docker pull ${DOCKER_PROD_REPO}:latest
-                        docker stop my-app || true
-                        docker rm my-app || true
-                        docker run -d --name my-app -p 80:80 ${DOCKER_PROD_REPO}:latest
-                        EOF
-                        """
-                    }
-                }
+    when {
+        branch 'master'
+    }
+    steps {
+        script {
+            sshagent([EC2_SSH_CREDENTIALS_ID]) {
+                sh '''
+                ssh -o StrictHostKeyChecking=no ${EC2_HOST} << EOF
+                docker pull ${DOCKER_PROD_REPO}:latest
+                docker stop my-app || true
+                docker rm my-app || true
+                docker run -d --name my-app -p 80:80 ${DOCKER_PROD_REPO}:latest
+                EOF
+                '''
             }
         }
     }
+}
 
     post {
         always {
