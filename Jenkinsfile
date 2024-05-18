@@ -36,6 +36,10 @@ pipeline {
                     docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
                         dockerImage.push("${DOCKER_DEV_REPO}:${env.BUILD_NUMBER}")
                         dockerImage.push("${DOCKER_DEV_REPO}:latest")
+
+                        // Tagging the image
+                        docker.image("${DOCKER_DEV_REPO}:${env.BUILD_NUMBER}").tag("${DOCKER_DEV_REPO}:latest")
+                        docker.image("${DOCKER_DEV_REPO}:${env.BUILD_NUMBER}").push()
                     }
                 }
             }
@@ -51,6 +55,10 @@ pipeline {
                         def prodImage = docker.build("${DOCKER_PROD_REPO}:${env.BUILD_NUMBER}")
                         prodImage.push("${DOCKER_PROD_REPO}:${env.BUILD_NUMBER}")
                         prodImage.push("${DOCKER_PROD_REPO}:latest")
+
+                        // Tagging the image
+                        docker.image("${DOCKER_PROD_REPO}:${env.BUILD_NUMBER}").tag("${DOCKER_PROD_REPO}:latest")
+                        docker.image("${DOCKER_PROD_REPO}:${env.BUILD_NUMBER}").push()
                     }
                 }
             }
