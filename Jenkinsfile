@@ -43,16 +43,6 @@ pipeline {
                             prodImage.push("harirajn/prod:${env.BUILD_NUMBER}")
                         }
 
-                        // SSH into the EC2 instance and deploy the prod image
-                        sshagent(credentials: [EC2_INSTANCE_KEY]) {
-                            sh """
-                                ssh -o StrictHostKeyChecking=no ${EC2_INSTANCE_USER}@${EC2_INSTANCE_IP} '
-                                    docker pull harirajn/prod:${env.BUILD_NUMBER} &&
-                                    docker stop my_container && docker rm my_container || true &&
-                                    docker run -d --name my_container -p 80:80 harirajn/prod:${env.BUILD_NUMBER}
-                                '
-                            """
-                        }
                     } else {
                         echo "No changes from dev branch detected in this merge to master."
                         sshagent(['EC2_INSTANCE_KEY']) {
