@@ -4,7 +4,7 @@ pipeline {
         DOCKER_HUB_CREDENTIALS = 'harirajn-dockerhub'
         EC2_INSTANCE_IP = '18.246.241.76'
         EC2_INSTANCE_USER = 'your_ec2_instance_useubuntur'
-        EC2_INSTANCE_KEY = credentials('ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKpQ6+IDHAtFYmHwaceeRY7bQvk8tF2zPxIyssm09tnT ubuntu@ip-172-31-20-254')
+        EC2_INSTANCE_KEY = credentials('ec2-instance-ssh')
     }
     stages {
         stage('Build and Push Dev Image') {
