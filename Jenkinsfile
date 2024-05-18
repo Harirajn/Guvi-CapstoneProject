@@ -3,8 +3,13 @@ pipeline {
     environment {
         DOCKER_HUB_CREDENTIALS = 'harirajn-dockerhub'
         EC2_INSTANCE_IP = '18.246.241.76'
+<<<<<<< HEAD
         EC2_INSTANCE_USER = 'ubuntu'
         EC2_INSTANCE_KEY = 'ec2-instance-ssh'
+=======
+        EC2_INSTANCE_USER = 'your_ec2_instance_useubuntur'
+        EC2_INSTANCE_KEY = credentials('ec2-instance-ssh')
+>>>>>>> dev
     }
     stages {
         stage('Build and Push Dev Image') {
@@ -44,6 +49,7 @@ pipeline {
                         }
 
                         // SSH into the EC2 instance and deploy the prod image
+<<<<<<< HEAD
                         sshagent(credentials: [EC2_INSTANCE_KEY]) {
                             sh """
                                 ssh -o StrictHostKeyChecking=no ${EC2_INSTANCE_USER}@${EC2_INSTANCE_IP} '
@@ -55,6 +61,15 @@ pipeline {
                         }
                     } else {
                         echo "No changes from dev branch detected in this merge to master."
+=======
+                        sshagent(['EC2_INSTANCE_KEY']) {
+                            sh "ssh -o StrictHostKeyChecking=no -i ${EC2_INSTANCE_KEY} ${EC2_INSTANCE_USER}@${EC2_INSTANCE_IP} 'docker pull harirajn/prod:${env.BUILD_NUMBER}'"
+                            sh "ssh -o StrictHostKeyChecking=no -i ${EC2_INSTANCE_KEY} ${EC2_INSTANCE_USER}@${EC2_INSTANCE_IP} 'docker stop <container_id> && docker rm <container_id> || true'"
+                            sh "ssh -o StrictHostKeyChecking=no -i ${EC2_INSTANCE_KEY} ${EC2_INSTANCE_USER}@${EC2_INSTANCE_IP} 'docker run -d --name my_container -p 80:80 harirajn/prod:${env.BUILD_NUMBER}'"
+                        }
+                    } else {
+                        echo "No changes from dev branch detected in this merge to master brach."
+>>>>>>> dev
                     }
                 }
             }
