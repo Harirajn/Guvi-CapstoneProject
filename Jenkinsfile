@@ -2,6 +2,9 @@ pipeline {
     agent any
     environment {
         DOCKER_HUB_CREDENTIALS = 'harirajn-dockerhub'
+        EC2_INSTANCE_IP = '18.246.241.76'
+        EC2_INSTANCE_USER = 'your_ec2_instance_useubuntur'
+        EC2_INSTANCE_KEY = credentials('ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKpQ6+IDHAtFYmHwaceeRY7bQvk8tF2zPxIyssm09tnT ubuntu@ip-172-31-20-254')
     }
     stages {
         stage('Build and Push Dev Image') {
@@ -38,6 +41,13 @@ pipeline {
                         prodImage.tag("harirajn/prod:${env.BUILD_NUMBER}")
                         docker.withRegistry('https://registry.hub.docker.com', "${DOCKER_HUB_CREDENTIALS}") {
                             prodImage.push("harirajn/prod:${env.BUILD_NUMBER}")
+                        }
+
+                        // SSH into the EC2 instance and deploy the prod image
+                        sshagent(['EC2_INSTANCE_KEY']) {
+                            sh "ssh -o StrictHostKeyChecking=no -i ${EC2_INSTANCE_KEY} ${EC2_INSTANCE_USER}@${EC2_INSTANCE_IP} 'docker pull harirajn/prod:${env.BUILD_NUMBER}'"
+                            sh "ssh -o StrictHostKeyChecking=no -i ${EC2_INSTANCE_KEY} ${EC2_INSTANCE_USER}@${EC2_INSTANCE_IP} 'docker stop <container_id> && docker rm <container_id> || true'"
+                            sh "ssh -o StrictHostKeyChecking=no -i ${EC2_INSTANCE_KEY} ${EC2_INSTANCE_USER}@${EC2_INSTANCE_IP} 'docker run -d --name my_container -p 80:80 harirajn/prod:${env.BUILD_NUMBER}'"
                         }
                     } else {
                         echo "No changes from dev branch detected in this merge to master."
