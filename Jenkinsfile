@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_DEV_REPO = 'harirajn/dev-repo'
-        DOCKER_PROD_REPO = 'harirajn/prod-repo'
+        DOCKER_DEV_REPO = 'harirajn/dev'
+        DOCKER_PROD_REPO = 'harirajn/prod'
         DOCKER_CREDENTIALS_ID = 'harirajn-dockerhub'
         EC2_SSH_CREDENTIALS_ID = 'ec2-instance-ssh'
         EC2_HOST = 'ubuntu@18.246.241.76'
