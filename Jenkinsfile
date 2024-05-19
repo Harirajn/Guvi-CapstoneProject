@@ -64,12 +64,10 @@ pipeline {
                 script {
                     sshagent(credentials: [EC2_SSH_CREDENTIALS_ID]) {
                         sh """
-                        ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} << 'EOF'
-                            docker pull ${DOCKER_PROD_REPO}:latest
-                            docker stop my-app || true
-                            docker rm my-app || true
-                            docker run -d --name my-app -p 80:80 ${DOCKER_PROD_REPO}:latest
-                        EOF
+                        ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} 'docker pull ${DOCKER_PROD_REPO}:latest'
+                        ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} 'docker stop my-app || true'
+                        ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} 'docker rm my-app || true'
+                        ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} 'docker run -d --name my-app -p 80:80 ${DOCKER_PROD_REPO}:latest'
                         """
                     }
                 }
