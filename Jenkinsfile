@@ -35,7 +35,6 @@ pipeline {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
                         dockerImage.push("${env.BUILD_NUMBER}")
-                        dockerImage.push("latest")
                     }
                 }
             }
@@ -50,7 +49,6 @@ pipeline {
                     docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
                         def prodImage = docker.build("${DOCKER_PROD_REPO}:${env.BUILD_NUMBER}")
                         prodImage.push("${env.BUILD_NUMBER}")
-                        prodImage.push("latest")
                     }
                 }
             }
@@ -66,10 +64,10 @@ pipeline {
                         sshagent(credentials: [EC2_SSH_CREDENTIALS_ID]) {
                             sh """
                             ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} 'echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin'
-                            ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} 'docker pull ${DOCKER_PROD_REPO}:latest'
-                            ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} 'docker stop my-app || true'
-                            ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} 'docker rm my-app || true'
-                            ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} 'docker run -d --name my-app -p 80:80 ${DOCKER_PROD_REPO}:latest'
+                            ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} 'docker pull ${DOCKER_PROD_REPO}:${env.BUILD_NUMBER}'
+                            ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} 'docker stop online-store || true'
+                            ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} 'docker rm online-store || true'
+                            ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} 'docker run -d --name online-store -p 80:80 ${DOCKER_PROD_REPO}:${env.BUILD_NUMBER}'
                             """
                         }
                     }
