@@ -6,7 +6,7 @@ pipeline {
         DOCKER_PROD_REPO = 'harirajn/prod'
         DOCKER_CREDENTIALS_ID = 'harirajn-dockerhub'
         EC2_SSH_CREDENTIALS_ID = 'ec2-instance-ssh'
-        EC2_HOST = '18.246.241.76'
+        EC2_HOST = '52.39.1.129'
     }
 
     stages {
