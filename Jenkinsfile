@@ -40,7 +40,7 @@ pipeline {
                 }
             }
         }
-        stage('Deploy to EC2') {
+        stage('Deploy dev to EC2') {
             when {
                 branch 'dev'
             }
@@ -77,7 +77,7 @@ pipeline {
             }
         }
 
-        stage('Deploy to EC2') {
+        stage('Deploy prod to EC2') {
             when {
                 branch 'master'
             }
