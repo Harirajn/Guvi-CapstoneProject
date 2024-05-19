@@ -6,7 +6,7 @@ pipeline {
         DOCKER_PROD_REPO = 'harirajn/prod'
         DOCKER_CREDENTIALS_ID = 'harirajn-dockerhub'
         EC2_SSH_CREDENTIALS_ID = 'ec2-instance-ssh'
-        EC2_HOST = 'ubuntu@18.246.241.76'
+        EC2_HOST = '18.246.241.76'
     }
 
     stages {
@@ -27,7 +27,7 @@ pipeline {
             }
         }
 
-        stage('Push Docker Image') {
+        stage('Push Docker Image to Dev Repo') {
             when {
                 branch 'dev'
             }
@@ -41,7 +41,7 @@ pipeline {
             }
         }
 
-        stage('Push to Prod Repo') {
+        stage('Push Docker Image to Prod Repo') {
             when {
                 branch 'master'
             }
@@ -62,15 +62,15 @@ pipeline {
             }
             steps {
                 script {
-                    sshagent([EC2_SSH_CREDENTIALS_ID]) {
-                        sh '''
-                        ssh -o StrictHostKeyChecking=no ${EC2_HOST} <<EOF
-                        docker pull ${DOCKER_PROD_REPO}:latest
-                        docker stop my-app || true
-                        docker rm my-app || true
-                        docker run -d --name my-app -p 80:80 ${DOCKER_PROD_REPO}:latest
-        EOF
-                        '''
+                    sshagent(credentials: [EC2_SSH_CREDENTIALS_ID]) {
+                        sh """
+                        ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} << EOF
+                            docker pull ${DOCKER_PROD_REPO}:latest
+                            docker stop my-app || true
+                            docker rm my-app || true
+                            docker run -d --name my-app -p 80:80 ${DOCKER_PROD_REPO}:latest
+                        EOF
+                        """
                     }
                 }
             }
@@ -80,6 +80,13 @@ pipeline {
     post {
         always {
             cleanWs()
+        }
+        failure {
+            script {
+                echo "Build failed! Cleaning up Docker images."
+                sh "docker rmi ${DOCKER_DEV_REPO}:${env.BUILD_NUMBER} || true"
+                sh "docker rmi ${DOCKER_PROD_REPO}:${env.BUILD_NUMBER} || true"
+            }
         }
     }
 }
