@@ -53,7 +53,7 @@ pipeline {
                             ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} 'docker pull ${DOCKER_DEV_REPO}:${env.BUILD_NUMBER}'
                             ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} 'docker stop online-store-dev || true'
                             ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} 'docker rm online-store-dev || true'
-                            ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} 'docker rmi ${DOCKER_DEV_REPO}:${env.BUILD_NUMBER} || true'
+                            ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} 'docker rmi ${DOCKER_DEV_REPO}:* || true'
                             ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} 'docker run -d --name online-store-dev -p 8080:80 -p 3001:3000 ${DOCKER_DEV_REPO}:${env.BUILD_NUMBER}'
                             """
                         }
