@@ -7,6 +7,7 @@ pipeline {
         DOCKER_CREDENTIALS_ID = 'harirajn-dockerhub'
         EC2_SSH_CREDENTIALS_ID = 'ec2-instance-ssh'
         EC2_HOST = '34.221.235.210'
+    }
 
     stages {
         stage('Checkout') {
@@ -34,11 +35,11 @@ pipeline {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
                         dockerImage.push("${env.BUILD_NUMBER}")
-                        
                     }
                 }
             }
         }
+
         stage('Deploy dev to EC2') {
             when {
                 branch 'dev'
@@ -70,7 +71,6 @@ pipeline {
                     docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
                         def prodImage = docker.build("${DOCKER_PROD_REPO}:${env.BUILD_NUMBER}")
                         prodImage.push("${env.BUILD_NUMBER}")
-                       
                     }
                 }
             }
@@ -111,5 +111,4 @@ pipeline {
             }
         }
     }
-}
 }
