@@ -6,8 +6,7 @@ pipeline {
         DOCKER_PROD_REPO = 'harirajn/prod'
         DOCKER_CREDENTIALS_ID = 'harirajn-dockerhub'
         EC2_SSH_CREDENTIALS_ID = 'ec2-instance-ssh'
-        EC2_HOST = '34.213.118.20'
-    }
+        EC2_HOST = '34.221.235.210'
 
     stages {
         stage('Checkout') {
@@ -54,7 +53,7 @@ pipeline {
                             ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} 'docker stop online-store-dev || true'
                             ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} 'docker rm online-store-dev || true'
                             ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} 'docker rmi ${DOCKER_DEV_REPO}:${env.BUILD_NUMBER} || true'
-                            ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} 'docker run -d --name online-store-dev -p 8080:80 ${DOCKER_DEV_REPO}:${env.BUILD_NUMBER}'
+                            ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} 'docker run -d --name online-store-dev -p 8080:80 -p 3001:3000 ${DOCKER_DEV_REPO}:${env.BUILD_NUMBER}'
                             """
                         }
                     }
@@ -91,7 +90,7 @@ pipeline {
                             ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} 'docker stop online-store-prod || true'
                             ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} 'docker rm online-store-prod || true'
                             ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} 'docker rmi ${DOCKER_PROD_REPO}:${env.BUILD_NUMBER} || true'
-                            ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} 'docker run -d --name online-store-prod -p 80:80 ${DOCKER_PROD_REPO}:${env.BUILD_NUMBER}'
+                            ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} 'docker run -d --name online-store-prod -p 80:80 -p 3002:3000 ${DOCKER_PROD_REPO}:${env.BUILD_NUMBER}'
                             """
                         }
                     }
